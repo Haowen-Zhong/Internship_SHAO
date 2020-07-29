@@ -2,7 +2,10 @@ program EOB
 implicit none
 
 real * 16 , parameter :: Pi=3.1415926535897932384626433832795028841971693993751_16
-COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+!COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+
+COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
 real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
 real * 16 :: coordinates(3),Momentum(3),u,iota,p,e,theta_min,theta_max,r_min,r_max,R,theta,phi
 real * 16 :: m_1,m_2,S_1,S_2,S_Kerr,alpha,beta,gamma,g(5)
@@ -21,6 +24,7 @@ real * 16 :: Temp_X(3),Temp_P(3)
 real * 16 :: t,t_f
 
 !——————————————————————————————————————————————
+
 open (10,file='./1.txt',status='unknown')
 open (20,file='./2.txt',status='unknown')
 write(20,*)"t ","Energy ","Carter "
@@ -30,8 +34,8 @@ write(20,*)"t ","Energy ","Carter "
 !————————————————————————————————————————————————————————————————————————————————————————————
 !——————————————————————————————————————————————质量——————————————————————————————————————————————
 M = 1
-mu = 0
-nu = 0
+mu = 1E-5_16
+nu = 1E-5_16
 !——————————————————————————————————————————————自旋——————————————————————————————————————————————
 !S_1 = 0.5 * m_1 **2
 !S_2 = 0.5 * m_2 **2
@@ -107,13 +111,13 @@ write(*,*)"The Carter Constant Q equals to:",Carter
 !——————————————————————————————————————————————初始条件求解完毕————————————————————————————————————————————————
 
 !————————————————————————————————————————————————-更新参数——————————————————————————————————————————————-————-
-!1--->P_R_Dot,2--->P_Theta_Dot,3--->R_Dot,4--->Theta_Dot,5--->Phi_Dot 									    ｜
-!   Derivative_of_parameters_ = D_Parameter(coordinates,Momentum) 											｜
-!   coordinates(1) = coordinates(1) + R_Dot(coordinates,Momentum)*h/10										｜
-!   coordinates(2) = coordinates(2) + Theta_Dot(coordinates,Momentum)*h/10									｜
-!   coordinates(3) = coordinates(3) + Phi_Dot(coordinates,Momentum)*h/10									｜
-!   Momentum(1) = Momentum(1) + P_R_Dot(coordinates,Momentum,Derivative_of_parameters_)*h/10				｜
-!   Momentum(2) = Momentum(2) + P_Theta_Dot(coordinates,Momentum,Derivative_of_parameters_)*h/10			｜
+!1--->P_R_Dot,2--->P_Theta_Dot,3--->R_Dot,4--->Theta_Dot,5--->Phi_Dot                                       ｜
+!   Derivative_of_parameters_ = D_Parameter(coordinates,Momentum)                                           ｜
+!   coordinates(1) = coordinates(1) + R_Dot(coordinates,Momentum)*h/10                                      ｜
+!   coordinates(2) = coordinates(2) + Theta_Dot(coordinates,Momentum)*h/10                                  ｜
+!   coordinates(3) = coordinates(3) + Phi_Dot(coordinates,Momentum)*h/10                                    ｜
+!   Momentum(1) = Momentum(1) + P_R_Dot(coordinates,Momentum,Derivative_of_parameters_)*h/10                ｜
+!   Momentum(2) = Momentum(2) + P_Theta_Dot(coordinates,Momentum,Derivative_of_parameters_)*h/10            ｜
 !————————————————————————————————————————————————-更新参数——————————————————————————————————————————————-————-
 
 do while (t .le. t_f)
@@ -182,8 +186,10 @@ contains
 
 function Metric(coordinates)
     implicit none
-	COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-	real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    !COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+	  real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
     real * 16 ,INTENT(IN):: coordinates(3)
     real * 16 :: m_1,m_2,u,Delta_Bar_u,Delta_u,R,theta
     real * 16 :: Delta_t,varpi_square,D_Minus_u,Delta_r,omega_tilde,Sigma,Lambda_t
@@ -229,7 +235,10 @@ function D_Parameter(coordinates,Momentum)
   !D_parameter--->Dalpha,Dbeta,dgamma     D_Metric--->Dg_xx
   !dgtt_dr,dgtt_dth,dgrr_dr,dgrr_dth,dgthth_dr,dgthth_dth,dgphph_dr,dgphph_dth,dgtph_dr,dgtph_dth
   !dalpha_dr,dalpha_dth,dbeta_dr,dbeta_dth,dgammarr_dr,dgammarr_dth,dgammatt_dr,dgammatt_dth,dgammapp_dr,dgammapp_dth
-  COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+
+  COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+  COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  !COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16 :: u,Delta_u,Delta_t,dDeltau_du,varpi_square,dDeltat_dr,dDeltar_dr,dD_Minus_u_du
   real * 16 :: dLambdat_dr,Sigma,Lambda_t,omega_tilde,D_Minus_u,Delta_r,Delta_Bar_u
@@ -329,7 +338,9 @@ function D_Parameter(coordinates,Momentum)
 
 function X_P_Dot(choice,coordinates,Momentum,Derivative_of_parameters)
   implicit none
-  COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+  COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  !COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16,INTENT(IN) :: coordinates(3),Momentum(3),Derivative_of_parameters(10)
   integer :: choice
@@ -351,7 +362,9 @@ function X_P_Dot(choice,coordinates,Momentum,Derivative_of_parameters)
 
 function P_R_Dot(coordinates,Momentum,Derivative_of_parameters)
   implicit none
-  COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  !COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+  COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16, INTENT(IN) :: coordinates(3),Momentum(3),Derivative_of_parameters(10)
   real * 16 :: The_guy_with_alpha,Energy,H_hat,dH_dHeff
@@ -397,7 +410,9 @@ function P_R_Dot(coordinates,Momentum,Derivative_of_parameters)
 
 function P_Theta_Dot(coordinates,Momentum,Derivative_of_parameters)
   implicit none
-  COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+  COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  !COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16, INTENT(IN) :: coordinates(3),Momentum(3),Derivative_of_parameters(10)
   real * 16 :: Energy,H_hat,dH_dHeff
@@ -442,7 +457,9 @@ function P_Theta_Dot(coordinates,Momentum,Derivative_of_parameters)
 
 function R_Dot(coordinates,Momentum)
   implicit none
-  COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+  COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  !COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16, INTENT(IN) :: coordinates(3),Momentum(3)
   real * 16 :: Energy,H_hat,dH_dHeff
@@ -476,7 +493,9 @@ function R_Dot(coordinates,Momentum)
 
 function Theta_Dot(coordinates,Momentum) 
   implicit none
-  COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+  COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  !COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16, INTENT(IN) :: coordinates(3),Momentum(3)
   real * 16 :: H_hat,Energy,dH_dHeff
@@ -510,9 +529,11 @@ function Theta_Dot(coordinates,Momentum)
 
 function Phi_Dot(coordinates,Momentum)
   implicit none
-  COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-  real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  COMMON /group1/ M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+  COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  !COMMON M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16, INTENT(IN) :: coordinates(3),Momentum(3)
+  real * 16 :: M,mu,nu,a,chi_Kerr,K,omega_1,omega_2,Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   real * 16 :: Energy,H_hat,dH_dHeff
   real * 16 :: g(5),alpha,beta,gamma,The_guy_with_alpha
   real * 16 :: Phi_Dot
