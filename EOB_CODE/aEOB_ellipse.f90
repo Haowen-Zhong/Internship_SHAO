@@ -118,10 +118,10 @@ program EOB
   !                                                                                                            |
   !————————————————————————————————————————求解不考虑自旋效应时的初始条件——————————————————————————————————————————
 
-  parameters(:) = Parameter_Calculater((/R_min,theta_min,0._16/))
+  parameters(:) = Parameter_Calculator((/R_min,theta_min,0._16/))
   g_1 = Metric(parameters,(/R_min,theta_min,0._16/))
 
-  parameters(:) = Parameter_Calculater((/R_max,theta_max,Pi/))											
+  parameters(:) = Parameter_Calculator((/R_max,theta_max,Pi/))											
   g_2 = Metric(parameters,(/R_max,theta_max,Pi/))																	
 
   b1 = g_1(5)/g_1(1)
@@ -148,18 +148,18 @@ program EOB
   write(*,*)"The Carter Constant Q equals to:",Carter
 
   !——————————————————————————————————————————————初始条件求解完毕————————————————————————————————————————————————
-  parameters1 = Parameter_Calculater((/R_min,theta_min,0._16/))
-  parameters2 = Parameter_Calculater((/R_max,theta_max,Pi/))
+  parameters1 = Parameter_Calculator((/R_min,theta_min,0._16/))
+  parameters2 = Parameter_Calculator((/R_max,theta_max,Pi/))
   write(*,*)"Energy caused by Spin",d_SS*nu*dot_product(S_Kerr,sigma_Star)/coordinates(1)**4+&
   H_SO_SS(parameters,coordinates,Momentum)+Spin_to_itself(parameters,coordinates,Momentum)
   do while((Difference .ge. epsilon) .and. (i .le. 200))
     old_L = Momentum(3)
     Z1 = H_SO_SS(parameters1,(/R_min,theta_min,0._16/),Momentum)/mu + &
          d_SS*nu*dot_product(S_Kerr,sigma_Star)/R_min**4+&
-         Spin_to_itself(parameters1,(/R_min,theta_min,Pi/),Momentum)
+         Spin_to_itself(parameters1,(/R_min,theta_min,0_16/),Momentum)
     Z2 = H_SO_SS(parameters2,(/R_max,theta_max,Pi/),Momentum)/mu + &
          d_SS*nu*dot_product(S_Kerr,sigma_Star)/R_max**4+&
-         Spin_to_itself(parameters1,(/R_max,theta_max,Pi/),Momentum)
+         Spin_to_itself(parameters2,(/R_max,theta_max,Pi/),Momentum)
 
     Momentum(3) = Sqrt(((((b2-b1)*old_L+Z2-Z1+a2*Sqrt(1+c2*old_L**2))/a1)**2-1)/c1)
     Difference = abs(Momentum(3)-old_L)
@@ -188,7 +188,7 @@ program EOB
   coordinates(:) = (/R_min,theta_min,0._16/)
   do while (t .le. t_f)
 
-      parameters = Parameter_Calculater(coordinates)
+      parameters = Parameter_Calculator(coordinates)
       g(:) = Metric(parameters,coordinates)
 
       alpha = 1/Sqrt(-g(1))
@@ -219,7 +219,7 @@ program EOB
 
   	Temp_X(:) = coordinates(:) + h/2.*(/K1(3),K1(4),K1(5)/)
   	Temp_P(:) = Momentum(:) + h/2.*(/K1(1),K1(2),0._16/)
-    parameters = Parameter_Calculater(Temp_X)
+    parameters = Parameter_Calculator(Temp_X)
     Derivative_of_parameters_ = D_Parameter(Temp_X,Temp_P)
   	do i = 1,5
   	   K2(i) = X_P_Dot(i,parameters,Temp_X,Temp_P,Derivative_of_parameters_)
@@ -228,7 +228,7 @@ program EOB
   	Temp_X(:) = coordinates(:) + h/2.*(/K2(3),K2(4),K2(5)/)
   	Temp_P(:) = Momentum(:) + h/2.*(/K2(1),K2(2),0._16/)
   	Derivative_of_parameters_ = D_Parameter(Temp_X,Temp_P)
-    parameters = Parameter_Calculater(Temp_X)
+    parameters = Parameter_Calculator(Temp_X)
   	do i = 1,5
   	   K3(i) = X_P_Dot(i,parameters,Temp_X,Temp_P,Derivative_of_parameters_)
   	end do
@@ -236,7 +236,7 @@ program EOB
   	Temp_X(:) = coordinates(:) + h*(/K3(3),K3(4),K3(5)/)
   	Temp_P(:) = Momentum(:) + h*(/K3(1),K3(2),0._16/)
   	Derivative_of_parameters_ = D_Parameter(Temp_X,Temp_P)
-    parameters = Parameter_Calculater(Temp_X)
+    parameters = Parameter_Calculator(Temp_X)
   	do i = 1,5
   	   K4(i) = X_P_Dot(i,parameters,Temp_X,Temp_P,Derivative_of_parameters_)
   	end do
@@ -265,7 +265,7 @@ program EOB
   !6--->Lambda_t   7--->Delta_t'        8--->Lambda_t'     9--->Delta_r'                                    |
   !————————————————————————————————-PARAMETER_CALCULATOR————————————————————————————————————————————————————
 
-  function Parameter_Calculater(coordinates)
+  function Parameter_Calculator(coordinates)
       implicit none
       COMMON /group1/ m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
       COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
@@ -276,7 +276,7 @@ program EOB
       real * 16 :: u,Delta_Bar_u,Delta_u,R,theta
       real * 16 :: Delta_t,varpi_square,D_Minus_u,Delta_r,omega_tilde,Sigma,Lambda_t
       real * 16 :: dDeltau_du,dDeltar_dr,dD_Minus_u_du,dLambdat_dr,dDeltat_dr
-      real * 16 :: Parameter_Calculater(9)
+      real * 16 :: Parameter_Calculator(9)
 
       R = coordinates(1)
 
@@ -314,7 +314,7 @@ program EOB
 
       dLambdat_dr = 4*R*varpi_square - a**2*Sin(theta)**2*dDeltat_dr
 
-      Parameter_Calculater(:) = (/Sigma,varpi_square,omega_tilde,Delta_t,Delta_r,Lambda_t,dDeltat_dr,dLambdat_dr,dDeltar_dr/)
+      Parameter_Calculator(:) = (/Sigma,varpi_square,omega_tilde,Delta_t,Delta_r,Lambda_t,dDeltat_dr,dLambdat_dr,dDeltar_dr/)
 
       return
       end function
@@ -368,7 +368,7 @@ program EOB
 
     theta = coordinates(2)
 
-    parameters(:) = Parameter_Calculater(coordinates)
+    parameters(:) = Parameter_Calculator(coordinates)
     Sigma = parameters(1)
     varpi_square = parameters(2)
     omega_tilde = parameters(3)
@@ -903,19 +903,19 @@ program EOB
       Temp_X(:) = coordinates(:)
 
       Temp_X(1) = coordinates(1) + 2*h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f1 = H_SO_SS(parameters,Temp_X,Momentum)
 
       Temp_X(1) = coordinates(1) + h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f2 = H_SO_SS(parameters,Temp_X,Momentum)
 
       Temp_X(1) = coordinates(1) - h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f3 = H_SO_SS(parameters,Temp_X,Momentum)
 
       Temp_X(1) = coordinates(1) - 2*h 
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f4 = H_SO_SS(parameters,Temp_X,Momentum)
 
     !choice ==2   ===> (Spin_to_itself)'_R
@@ -924,26 +924,26 @@ program EOB
       Temp_X(:) = coordinates(:)
 
       Temp_X(1) = coordinates(1) + 2*h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f1 = Spin_to_itself(parameters,Temp_X,Momentum)
 
       Temp_X(1) = coordinates(1) + h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f2 = Spin_to_itself(parameters,Temp_X,Momentum)
 
       Temp_X(1) = coordinates(1) - h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f3 = Spin_to_itself(parameters,Temp_X,Momentum)
 
       Temp_X(1) = coordinates(1) - 2*h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f4 = Spin_to_itself(parameters,Temp_X,Momentum)
 
     !choice == 3  ===> (H_SO_SS)'_PR 
     else if (choice .eq. 3) then
 
       Temp_P(:) = Momentum(:)
-      parameters(:) = Parameter_Calculater(coordinates)
+      parameters(:) = Parameter_Calculator(coordinates)
 
       Temp_P(1) = Momentum(1) + 2*h
       f1 = H_SO_SS(parameters,coordinates,Temp_P)
@@ -962,7 +962,7 @@ program EOB
     else if (choice .eq. 4 ) then
 
       Temp_P(:) = Momentum(:)
-      parameters(:) = Parameter_Calculater(coordinates)
+      parameters(:) = Parameter_Calculator(coordinates)
 
       Temp_P(1) = Momentum(1) + 2*h
       f1 = Spin_to_itself(parameters,coordinates,Temp_P)
@@ -982,48 +982,48 @@ program EOB
       Temp_X(:) = coordinates(:)
 
       Temp_X(2) = coordinates(2) + 2*h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f1 = H_SO_SS(parameters,Temp_X,Momentum)
 
       Temp_X(2) = coordinates(2) + h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f2 = H_SO_SS(parameters,Temp_X,Momentum)
 
       Temp_X(2) = coordinates(2) - h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f3 = H_SO_SS(parameters,Temp_X,Momentum)
 
       Temp_X(2) = coordinates(2) - 2*h 
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f4 = H_SO_SS(parameters,Temp_X,Momentum)
 
     !choice ==6   ===> (Spin_to_itself)'_theta
     else if (choice .eq. 6) then
 
       Temp_X(:) = coordinates(:)
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
 
       Temp_X(2) = coordinates(2) + 2*h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f1 = Spin_to_itself(parameters,Temp_X,Momentum)
 
       Temp_X(2) = coordinates(2) + h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f2 =  Spin_to_itself(parameters,Temp_X,Momentum)
 
       Temp_X(2) = coordinates(2) - h
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f3 =  Spin_to_itself(parameters,Temp_X,Momentum)
 
       Temp_X(2) = coordinates(2) - 2*h 
-      parameters(:) = Parameter_Calculater(Temp_X)
+      parameters(:) = Parameter_Calculator(Temp_X)
       f4 =  Spin_to_itself(parameters,Temp_X,Momentum)
 
     !choice == 7  ===> (H_SO_SS)'_ptheta  
     else if (choice .eq. 7) then
 
       Temp_P(:) = Momentum(:)
-      parameters(:) = Parameter_Calculater(coordinates)
+      parameters(:) = Parameter_Calculator(coordinates)
 
       Temp_P(2) = Momentum(2) + 2*h
       f1 = H_SO_SS(parameters,coordinates,Temp_P)
@@ -1042,7 +1042,7 @@ program EOB
     else if (choice .eq. 8) then
 
       Temp_P(:) = Momentum(:)
-      parameters(:) = Parameter_Calculater(coordinates)
+      parameters(:) = Parameter_Calculator(coordinates)
 
       Temp_P(2) = Momentum(2) + 2*h
       f1 = Spin_to_itself(parameters,coordinates,Temp_P)
@@ -1063,7 +1063,7 @@ program EOB
     else if (choice .eq. 9) then
 
       Temp_P(:) = Momentum(:)
-      parameters(:) = Parameter_Calculater(coordinates)
+      parameters(:) = Parameter_Calculator(coordinates)
 
       Temp_P(3) = Momentum(3) + 2*h
       f1 = H_SO_SS(parameters,coordinates,Temp_P)
@@ -1081,7 +1081,7 @@ program EOB
     else if (choice .eq. 10) then
 
       Temp_P(:) = Momentum(:)
-      parameters(:) = Parameter_Calculater(coordinates)
+      parameters(:) = Parameter_Calculator(coordinates)
 
       Temp_P(3) = Momentum(3) + 2*h
       f1 = Spin_to_itself(parameters,coordinates,Temp_P)
