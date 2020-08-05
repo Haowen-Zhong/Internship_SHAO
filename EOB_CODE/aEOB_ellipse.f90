@@ -9,30 +9,30 @@
 program EOB
   implicit none
 
-  real * 16 , parameter :: Pi=3.1415926535897932384626433832795028841971693993751_16
+  real * 8 , parameter :: Pi=3.1415926535897932384626433832795028841971693993751D0
 
 
   COMMON /group1/ m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
   COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
   COMMON /group3/ S_Kerr,norm_S_Kerr,sigma_Star,d_SO,d_SS
 
-  real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-  real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-  real * 16 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
+  real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+  real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+  real * 8 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
 
-  real * 16 :: coordinates(3),Momentum(3),u,p,e,theta_min,theta_max,R_min,R_max,R,theta,phi,psi,zeta
-  real * 16 :: Rotation(3,3),S_1(3),S_2(3),S(3),norm_S_Star
-  real * 16 :: alpha,beta,gamma,g(5),Derivative_of_parameters_(10),Q_4
-  real * 16 :: The_guy_with_alpha,H_hat,Energy,Carter
-  real * 16 :: S_Star_(3),S_Star_1(3),S_Star_2(3),parameters(9),Difference=1._16,epsilon = 1E-20_16
-  real * 16 :: g_1(5),g_2(5),a1,a2,b1,b2,c1,c2,Z1,Z2,parameters1(9),parameters2(9),old_L
+  real * 8 :: K0,coordinates(3),Momentum(3),u,p,e,theta_min,theta_max,R_min,R_max,R,theta,phi,psi,zeta
+  real * 8 :: Rotation(3,3),S_1(3),S_2(3),S(3),norm_S_Star
+  real * 8 :: alpha,beta,gamma,g(5),Derivative_of_parameters_(10),Q_4
+  real * 8 :: The_guy_with_alpha,H_hat,Energy,Carter
+  real * 8 :: S_Star_(3),S_Star_1(3),S_Star_2(3),parameters(9),Difference=1.D0,epsilon = 1E-20
+  real * 8 :: g_1(5),g_2(5),a1,a2,b1,b2,c1,c2,Z1,Z2,parameters1(9),parameters2(9),old_L
   integer :: i = 1
 
   !——————————————————————以下参数为采用Runge-Kutta方法求解微分方程而定义————————————————————————————————
 
-  real * 16 :: K1(5),K2(5),K3(5),K4(5),h
-  real * 16 :: Temp_X(3),Temp_P(3)
-  real * 16 :: t,t_f
+  real * 8 :: K1(5),K2(5),K3(5),K4(5),h
+  real * 8 :: Temp_X(3),Temp_P(3)
+  real * 8 :: t,t_f
 
   !————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -43,23 +43,23 @@ program EOB
   100 format(6f25.10)
   200 format(1f10.4,2f25.15)
   !——————————————————————————————————————————————质量————————————————————————————————————————————————
-  m_1 = 1_16
-  m_2 = 1_16
+  m_1 = 1D0
+  m_2 = 1D0
   M = m_1 + m_2
   mu = m_1*m_2/M
   nu = mu/M
   !——————————————————————————————————————————自旋以及求解旋转矩阵——————————————————————————————————————
-  d_SO = -69.5_16                                                 !文献式(39)
-  d_SS = 2.75_16                                                  !文献式(39)
-  S_1(:) = (/0.0_16,0.0_16,0.5_16/) * M **2
-  S_2(:) = (/0._16,0._16,0._16/) * m_2 **2
+  d_SO = -69.5D0                                                 !文献式(39)
+  d_SS = 2.75D0                                                  !文献式(39)
+  S_1(:) = (/0.0D0,0.0D0,0.5D0/) * m_1 **2
+  S_2(:) = (/0.D0,0.D0,0.D0/) * m_2 **2
   S_Kerr = S_1 + S_2                                              !最原始的坐标系中的自旋分量
   sigma_Star = m_1/m_2*S_2 + m_2/m_1*S_1                          !最原始的坐标系中的自旋分量
   norm_S_Kerr = Sqrt(S_Kerr(1)**2+S_Kerr(2)**2+S_Kerr(3)**2)
   if ((Abs(S_Kerr(1)) .ge. 1E-10) .or. (Abs(S_Kerr(2)) .ge. 1E-10)) then
     psi  = Acos(S_Kerr(3)/norm_S_Kerr)
     zeta = Atan(S_Kerr(2)/S_Kerr(1))
-    Rotation(1,:) = (/-Sin(zeta),Cos(zeta),0._16/)
+    Rotation(1,:) = (/-Sin(zeta),Cos(zeta),0.D0/)
     Rotation(2,:) = (/-Cos(psi)*Cos(zeta),-Cos(psi)*Sin(zeta),Sin(psi)/)
     Rotation(3,:) = (/Sin(psi)*Cos(zeta),Sin(psi)*Sin(zeta),Cos(psi)/)
     S_Kerr(:) = matmul(Rotation,S_Kerr)                                    !旋转坐标系后的自旋分量
@@ -69,9 +69,10 @@ program EOB
   a = norm_S_Kerr/M
   chi_Kerr = a/M
   !——————————————————————————————————————————————K参数——————————————————————————————————————————————
-  K = 1.447 - 1.715*nu - 3.246*nu**2                              !文献式(37)
-  omega_1 = 0._16
-  omega_2 = 0._16
+  K0 = 1.4467
+  K = K0*(1-4*nu)**2 + 4*(1-2*nu)*nu                               !文献式(37)
+  omega_1 = 0.D0
+  omega_2 = 0.D0
   !——————————————————————————————————————————————Delta参数——————————————————————————————————————————————
   Delta_0 = K*(nu*K-2)
 
@@ -99,13 +100,13 @@ program EOB
   theta_max = Pi-theta_min
 
   !从近心点，同时也是theta最小值处开始运动
-  coordinates(:) = (/R_min,theta_min,0._16/)
-  Momentum(:) = (/0._16,0._16,0._16/)
+  coordinates(:) = (/R_min,theta_min,0.D0/)
+  Momentum(:) = (/0.D0,0.D0,0.D0/)
 
   !步长0.03M     模拟时长为10000M
-  h = 0.05 * M
+  h = 0.01 * M
   t = 0
-  t_f = 5000 * M
+  t_f = 1000 * M
 
 
   !————————————————————————————————————————求解不考虑自旋效应时的初始条件——————————————————————————————————————————_
@@ -118,8 +119,8 @@ program EOB
   !                                                                                                            |
   !————————————————————————————————————————求解不考虑自旋效应时的初始条件——————————————————————————————————————————
 
-  parameters(:) = Parameter_Calculator((/R_min,theta_min,0._16/))
-  g_1 = Metric(parameters,(/R_min,theta_min,0._16/))
+  parameters(:) = Parameter_Calculator((/R_min,theta_min,0.D0/))
+  g_1 = Metric(parameters,(/R_min,theta_min,0.D0/))
 
   parameters(:) = Parameter_Calculator((/R_max,theta_max,Pi/))											
   g_2 = Metric(parameters,(/R_max,theta_max,Pi/))																	
@@ -133,8 +134,8 @@ program EOB
   c1 = g_1(4) - g_1(5)**2/g_1(1)
   c2 = g_2(4) - g_2(5)**2/g_2(1)
 
-  Momentum(1) = 0._16
-  Momentum(2) = 0._16
+  Momentum(1) = 0.D0
+  Momentum(2) = 0.D0
   Momentum(3) = Sqrt((b1**2*(a1**2+a2**2)-2*b1*b2*(a1**2+a2**2)+b2**2*(a1**2+a2**2)-a1**4*c1+a1**2*a2**2*c1-&
                 2*Sqrt((b1-b2)**2*a1**2*a2**2*((b1-b2)**2-(a1**2-a2**2)*(c1-c2)))+a1**2*a2**2*c2-a2**4*c2)/&
                 (b1**4-4*b1**3*b2+b2**4+(a1**2*c1-a2**2*c2)**2-2*b2**2*(a1**2*c1+a2**2*c2)+4*b1*b2*(-b2**2+&
@@ -148,15 +149,16 @@ program EOB
   write(*,*)"The Carter Constant Q equals to:",Carter
 
   !——————————————————————————————————————————————初始条件求解完毕————————————————————————————————————————————————
-  parameters1 = Parameter_Calculator((/R_min,theta_min,0._16/))
+  parameters1 = Parameter_Calculator((/R_min,theta_min,0.D0/))
   parameters2 = Parameter_Calculator((/R_max,theta_max,Pi/))
   write(*,*)"Energy caused by Spin",d_SS*nu*dot_product(S_Kerr,sigma_Star)/coordinates(1)**4+&
   H_SO_SS(parameters,coordinates,Momentum)+Spin_to_itself(parameters,coordinates,Momentum)
   do while((Difference .ge. epsilon) .and. (i .le. 200))
     old_L = Momentum(3)
-    Z1 = H_SO_SS(parameters1,(/R_min,theta_min,0._16/),Momentum)/mu + &
+    Z1 = H_SO_SS(parameters1,(/R_min,theta_min,0.D0/),Momentum)/mu + &
          d_SS*nu*dot_product(S_Kerr,sigma_Star)/R_min**4+&
-         Spin_to_itself(parameters1,(/R_min,theta_min,0_16/),Momentum)
+         Spin_to_itself(parameters1,(/R_min,theta_min,0.D0/),Momentum)
+    write(*,*)"Z1=",Z1
     Z2 = H_SO_SS(parameters2,(/R_max,theta_max,Pi/),Momentum)/mu + &
          d_SS*nu*dot_product(S_Kerr,sigma_Star)/R_max**4+&
          Spin_to_itself(parameters2,(/R_max,theta_max,Pi/),Momentum)
@@ -185,7 +187,7 @@ program EOB
   !————————————————————————————————————————————————-更新参数——————————————————————————————————————————————-————-
 
   i = 1
-  coordinates(:) = (/R_min,theta_min,0._16/)
+  coordinates(:) = (/R_min,theta_min,0.D0/)
   do while (t .le. t_f)
 
       parameters = Parameter_Calculator(coordinates)
@@ -218,7 +220,7 @@ program EOB
   	end do
 
   	Temp_X(:) = coordinates(:) + h/2.*(/K1(3),K1(4),K1(5)/)
-  	Temp_P(:) = Momentum(:) + h/2.*(/K1(1),K1(2),0._16/)
+  	Temp_P(:) = Momentum(:) + h/2.*(/K1(1),K1(2),0.D0/)
     parameters = Parameter_Calculator(Temp_X)
     Derivative_of_parameters_ = D_Parameter(Temp_X,Temp_P)
   	do i = 1,5
@@ -226,7 +228,7 @@ program EOB
   	end do
 
   	Temp_X(:) = coordinates(:) + h/2.*(/K2(3),K2(4),K2(5)/)
-  	Temp_P(:) = Momentum(:) + h/2.*(/K2(1),K2(2),0._16/)
+  	Temp_P(:) = Momentum(:) + h/2.*(/K2(1),K2(2),0.D0/)
   	Derivative_of_parameters_ = D_Parameter(Temp_X,Temp_P)
     parameters = Parameter_Calculator(Temp_X)
   	do i = 1,5
@@ -234,7 +236,7 @@ program EOB
   	end do
 
   	Temp_X(:) = coordinates(:) + h*(/K3(3),K3(4),K3(5)/)
-  	Temp_P(:) = Momentum(:) + h*(/K3(1),K3(2),0._16/)
+  	Temp_P(:) = Momentum(:) + h*(/K3(1),K3(2),0.D0/)
   	Derivative_of_parameters_ = D_Parameter(Temp_X,Temp_P)
     parameters = Parameter_Calculator(Temp_X)
   	do i = 1,5
@@ -270,13 +272,13 @@ program EOB
       COMMON /group1/ m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
       COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
 
-      real * 16 ,INTENT(IN):: coordinates(3)
-      real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-      real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-      real * 16 :: u,Delta_Bar_u,Delta_u,R,theta
-      real * 16 :: Delta_t,varpi_square,D_Minus_u,Delta_r,omega_tilde,Sigma,Lambda_t
-      real * 16 :: dDeltau_du,dDeltar_dr,dD_Minus_u_du,dLambdat_dr,dDeltat_dr
-      real * 16 :: Parameter_Calculator(9)
+      real * 8 ,INTENT(IN):: coordinates(3)
+      real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+      real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+      real * 8 :: u,Delta_Bar_u,Delta_u,R,theta
+      real * 8 :: Delta_t,varpi_square,D_Minus_u,Delta_r,omega_tilde,Sigma,Lambda_t
+      real * 8 :: dDeltau_du,dDeltar_dr,dD_Minus_u_du,dLambdat_dr,dDeltat_dr
+      real * 8 :: Parameter_Calculator(9)
 
       R = coordinates(1)
 
@@ -323,9 +325,9 @@ program EOB
 
   function Metric(parameters,coordinates)
       implicit none
-      real * 16 ,INTENT(IN):: parameters(9),coordinates(3)
-      real * 16 :: Lambda_t,Delta_t,Delta_r,Sigma,omega_tilde,theta
-      real * 16 :: g_tt,g_rr,g_thetatheta,g_phiphi,g_tphi,Metric(5)
+      real * 8 ,INTENT(IN):: parameters(9),coordinates(3)
+      real * 8 :: Lambda_t,Delta_t,Delta_r,Sigma,omega_tilde,theta
+      real * 8 :: g_tt,g_rr,g_thetatheta,g_phiphi,g_tphi,Metric(5)
 
       theta = coordinates(2)
 
@@ -355,14 +357,14 @@ program EOB
     COMMON /group1/ m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
     COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
 
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
 
-    real * 16 :: Delta_t,dDeltau_du,varpi_square,dDeltat_dr,dDeltar_dr,dD_Minus_u_du
-    real * 16 :: dLambdat_dr,Sigma,Lambda_t,omega_tilde,D_Minus_u,Delta_r,Delta_u
-    real * 16 :: gtt,gtphi,R,theta
-    real * 16 :: D_Metric(10),coordinates(3),Momentum(3),g(5),parameters(9)
-    real * 16 :: D_Parameter(10)
+    real * 8 :: Delta_t,dDeltau_du,varpi_square,dDeltat_dr,dDeltar_dr,dD_Minus_u_du
+    real * 8 :: dLambdat_dr,Sigma,Lambda_t,omega_tilde,D_Minus_u,Delta_r,Delta_u
+    real * 8 :: gtt,gtphi,R,theta
+    real * 8 :: D_Metric(10),coordinates(3),Momentum(3),g(5),parameters(9)
+    real * 8 :: D_Parameter(10)
 
     R = coordinates(1)
 
@@ -434,8 +436,8 @@ program EOB
 
   function X_P_Dot(choice,parameters,coordinates,Momentum,Derivative_of_parameters)
     implicit none
-    real * 16,INTENT(IN) :: parameters(9),coordinates(3),Momentum(3),Derivative_of_parameters(10)
-    real * 16 ::X_P_Dot
+    real * 8,INTENT(IN) :: parameters(9),coordinates(3),Momentum(3),Derivative_of_parameters(10)
+    real * 8 ::X_P_Dot
     integer :: choice
     if (choice .eq. 1) then
       X_P_Dot = P_R_Dot(parameters,coordinates,Momentum,Derivative_of_parameters)
@@ -459,15 +461,15 @@ program EOB
     COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
     COMMON /group3/ S_Kerr,norm_S_Kerr,sigma_Star,d_SO,d_SS
 
-    real * 16, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3),Derivative_of_parameters(10)
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-    real * 16 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
+    real * 8, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3),Derivative_of_parameters(10)
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    real * 8 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
 
-    real * 16 :: The_guy_with_alpha,Energy,H_hat,dH_dHeff,Q_4
-    real * 16 :: alpha,beta,gamma,dQ_dr,dH_Spin_dr,dSpin_to_itself_dr
-    real * 16 :: g(5),dbeta_dr,dalpha_dr,dgammarr_dr,dgammatt_dr,dgammapp_dr
-    real * 16 :: P_R_Dot
+    real * 8 :: The_guy_with_alpha,Energy,H_hat,dH_dHeff,Q_4
+    real * 8 :: alpha,beta,gamma,dQ_dr,dH_Spin_dr,dSpin_to_itself_dr
+    real * 8 :: g(5),dbeta_dr,dalpha_dr,dgammarr_dr,dgammatt_dr,dgammapp_dr
+    real * 8 :: P_R_Dot
 
 
     g(:) = Metric(parameters,coordinates)
@@ -526,14 +528,14 @@ program EOB
     COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
     COMMON /group3/ S_Kerr,norm_S_Kerr,sigma_Star,d_SO,d_SS
 
-    real * 16, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3),Derivative_of_parameters(10)
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-    real * 16 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
-    real * 16 :: Energy,H_hat,dH_dHeff,Q_4
-    real * 16 :: g(5),alpha,beta,gamma,dQ_dth,dH_Spin_dth,dSpin_to_itself_dth
-    real * 16 :: dbeta_dth,dalpha_dth,dgammarr_dth,dgammatt_dth,dgammapp_dth,dgtt_dth,The_guy_with_alpha
-    real * 16 :: P_Theta_Dot
+    real * 8, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3),Derivative_of_parameters(10)
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    real * 8 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
+    real * 8 :: Energy,H_hat,dH_dHeff,Q_4
+    real * 8 :: g(5),alpha,beta,gamma,dQ_dth,dH_Spin_dth,dSpin_to_itself_dth
+    real * 8 :: dbeta_dth,dalpha_dth,dgammarr_dth,dgammatt_dth,dgammapp_dth,dgtt_dth,The_guy_with_alpha
+    real * 8 :: P_Theta_Dot
 
     g(:) = Metric(parameters,coordinates)
 
@@ -589,14 +591,14 @@ program EOB
     COMMON /group1/ m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
     COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
     COMMON /group3/ S_Kerr,norm_S_Kerr,sigma_Star,d_SO,d_SS
-    real * 16, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-    real * 16 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
+    real * 8, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    real * 8 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
 
-    real * 16 :: g(5),alpha,beta,gamma,The_guy_with_alpha,dQ_dpr,dH_Spin_dpr,dSpin_to_itself_dpr
-    real * 16 :: Energy,H_hat,dH_dHeff,Q_4
-    real * 16 :: R_Dot
+    real * 8 :: g(5),alpha,beta,gamma,The_guy_with_alpha,dQ_dpr,dH_Spin_dpr,dSpin_to_itself_dpr
+    real * 8 :: Energy,H_hat,dH_dHeff,Q_4
+    real * 8 :: R_Dot
 
     g(:) = Metric(parameters,coordinates)
 
@@ -641,13 +643,13 @@ program EOB
     COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
     COMMON /group3/ S_Kerr,norm_S_Kerr,sigma_Star,d_SO,d_SS
 
-    real * 16, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-    real * 16 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
-    real * 16 :: g(5),alpha,beta,gamma,The_guy_with_alpha,dH_Spin_dpth,dSpin_to_itself_dpth
-    real * 16 :: H_hat,Energy,dH_dHeff,Q_4
-    real * 16 :: Theta_Dot
+    real * 8, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    real * 8 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
+    real * 8 :: g(5),alpha,beta,gamma,The_guy_with_alpha,dH_Spin_dpth,dSpin_to_itself_dpth
+    real * 8 :: H_hat,Energy,dH_dHeff,Q_4
+    real * 8 :: Theta_Dot
 
 
     g(:) = Metric(parameters,coordinates)
@@ -691,13 +693,13 @@ program EOB
     COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
     COMMON /group3/ S_Kerr,norm_S_Kerr,sigma_Star,d_SO,d_SS
 
-    real * 16, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-    real * 16 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
-    real * 16 :: g(5),alpha,beta,gamma,The_guy_with_alpha,dH_Spin_dpph,dSpin_to_itself_dpph
-    real * 16 :: Energy,H_hat,dH_dHeff,Q_4
-    real * 16 :: Phi_Dot
+    real * 8, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    real * 8 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
+    real * 8 :: g(5),alpha,beta,gamma,The_guy_with_alpha,dH_Spin_dpph,dSpin_to_itself_dpph
+    real * 8 :: Energy,H_hat,dH_dHeff,Q_4
+    real * 8 :: Phi_Dot
 
     g(:) = Metric(parameters,coordinates)
 
@@ -741,12 +743,12 @@ program EOB
     COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
     COMMON /group3/ S_Kerr,norm_S_Kerr,sigma_Star,d_SO,d_SS
 
-    real * 16 ,INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-    real * 16 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
-    real * 16 :: Delta_sigma_1(3),Delta_sigma_2(3),Delta_sigma_3(3),S_Star(3)
-    real * 16 :: u,R,theta,p_R,p_theta,p_phi,Q,g(5)
+    real * 8 ,INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    real * 8 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
+    real * 8 :: Delta_sigma_1(3),Delta_sigma_2(3),Delta_sigma_3(3),S_Star(3)
+    real * 8 :: u,R,theta,p_R,p_theta,p_phi,Q,g(5)
 
     g(:) = Metric(parameters,coordinates)
     R = coordinates(1)
@@ -773,7 +775,6 @@ program EOB
     Delta_sigma_3(:) = d_SO*nu/R**3*sigma_Star(:)
 
     S_Star(:) = sigma_Star(:) + Delta_sigma_1(:) + Delta_sigma_2(:) + Delta_sigma_3(:)
-    S_Star(:) = (/0._16,0._16,0._16/)
     return 
     end function
 
@@ -785,15 +786,15 @@ program EOB
     COMMON /group2/ Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
     COMMON /group3/ S_Kerr,norm_S_Kerr,sigma_Star,d_SO,d_SS
 
-    real * 16 ,INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
-    real * 16 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
-    real * 16 :: S(3),xi(3),v(3),n(3)
-    real * 16 :: R,theta,phi,p_R,p_theta,p_phi,Q,u,varpi_square,Delta_t,Delta_r,omega_cos,omega_tilde
-    real * 16 :: Sigma,Lambda_t,Lambda_t_prime,omega,omega_r,Delta_t_prime
-    real * 16 :: e_2nu,e_2mutilde,B_rtilde,B_tilde,J_tilde,mu_r,mu_cos,nu_r,nu_cos,H_SO,H_SS
-    real * 16 :: H_SO_SS
+    real * 8 ,INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: Delta_0,Delta_1,Delta_2,Delta_3,Delta_4
+    real * 8 :: S_Kerr(3),norm_S_Kerr,sigma_Star(3),d_SO,d_SS
+    real * 8 :: S(3),xi(3),v(3),n(3)
+    real * 8 :: R,theta,phi,p_R,p_theta,p_phi,Q,u,varpi_square,Delta_t,Delta_r,omega_cos,omega_tilde
+    real * 8 :: Sigma,Lambda_t,Lambda_t_prime,omega,omega_r,Delta_t_prime
+    real * 8 :: e_2nu,e_2mutilde,B_rtilde,B_tilde,J_tilde,mu_r,mu_cos,nu_r,nu_cos,H_SO,H_SS
+    real * 8 :: H_SO_SS
 
     R = coordinates(1)
     theta = coordinates(2)
@@ -832,7 +833,7 @@ program EOB
     !************************************************************************************************************
     Q  = 1 + Delta_r*p_R**2/Sigma + p_phi**2*Sigma/(Lambda_t*Sin(theta)**2) + p_theta**2/Sigma                 !*
     S(:) = nu * S_Star(parameters,coordinates,Momentum)                                                        !*
-    xi(:) = Sin(theta)*(/-Sin(phi),Cos(phi),0._16/)                                                            !*
+    xi(:) = Sin(theta)*(/-Sin(phi),Cos(phi),0.D0/)                                                            !*
     v(:) = -Sin(theta)*(/Cos(theta)*Cos(phi),Cos(theta)*Sin(phi),-Sin(theta)/)                                 !*  
     !************************************************************************************************************
     H_SO = e_2nu/Sqrt(e_2mutilde)*(Sqrt(e_2mutilde*e_2nu)-B_tilde)*p_phi*&
@@ -864,10 +865,10 @@ program EOB
     implicit none
     COMMON /group1/ m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
 
-    real * 16, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
-    real * 16 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
-    real * 16 :: S_Star_(3),X(3),R,theta,phi,norm_S_Star
-    real * 16 :: Spin_to_itself
+    real * 8, INTENT(IN) :: parameters(9),coordinates(3),Momentum(3)
+    real * 8 :: m_1,m_2,M,mu,nu,a,chi_Kerr,K,omega_1,omega_2
+    real * 8 :: S_Star_(3),X(3),R,theta,phi,norm_S_Star
+    real * 8 :: Spin_to_itself
 
     R = coordinates(1)
     theta = coordinates(2)
@@ -891,12 +892,12 @@ program EOB
 !     choice == 9  ===> (H_SO_SS)'_pphi             choice ==10  ===> (Spin_to_itself)'_pphi
 
     implicit none
-    real * 16 , INTENT(IN)  ::  coordinates(3),Momentum(3)
+    real * 8 , INTENT(IN)  ::  coordinates(3),Momentum(3)
     integer   , INTENT(IN)  ::  choice
-    real * 16 :: f1,f2,f3,f4,h,Temp_X(3),Temp_P(3),parameters(9)
-    real * 16 :: numerical_differentiation
+    real * 8 :: f1,f2,f3,f4,h,Temp_X(3),Temp_P(3),parameters(9)
+    real * 8 :: numerical_differentiation
 
-    h = 1E-4_16 * M
+    h = 1E-4 * M
     !choice == 1  ===> (H_SO_SS)'_R 
     if (choice .eq. 1) then
 
