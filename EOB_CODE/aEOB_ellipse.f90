@@ -26,6 +26,7 @@ program EOB
   real * 8 :: The_guy_with_alpha,H_hat,Energy,Carter
   real * 8 :: S_Star_(3),S_Star_1(3),S_Star_2(3),parameters(9),Difference=1.D0,epsilon = 1E-20
   real * 8 :: g_1(5),g_2(5),a1,a2,b1,b2,c1,c2,Z1,Z2,parameters1(9),parameters2(9),old_L
+  real * 8 :: Time_Begin,Time_End,Time
   integer :: i = 1
 
   !——————————————————————以下参数为采用Runge-Kutta方法求解微分方程而定义————————————————————————————————
@@ -106,7 +107,7 @@ program EOB
   !步长0.03M     模拟时长为10000M
   h = 0.01 * M
   t = 0
-  t_f = 1000 * M
+  t_f = 10 * M
 
 
   !————————————————————————————————————————求解不考虑自旋效应时的初始条件——————————————————————————————————————————_
@@ -153,6 +154,7 @@ program EOB
   parameters2 = Parameter_Calculator((/R_max,theta_max,Pi/))
   write(*,*)"Energy caused by Spin",d_SS*nu*dot_product(S_Kerr,sigma_Star)/coordinates(1)**4+&
   H_SO_SS(parameters,coordinates,Momentum)+Spin_to_itself(parameters,coordinates,Momentum)
+  call CPU_TIME(Time_Begin)
   do while((Difference .ge. epsilon) .and. (i .le. 200))
     old_L = Momentum(3)
     Z1 = H_SO_SS(parameters1,(/R_min,theta_min,0.D0/),Momentum)/mu + &
@@ -170,7 +172,9 @@ program EOB
     write(*,*)"Eq=",(b2*Momentum(3) + a2*Sqrt(1+c2*Momentum(3)**2)+Z2)-&
                       (b1*Momentum(3) + a1*Sqrt(1+c1*Momentum(3)**2)+Z1)
   end do
-
+  call CPU_TIME(Time_End)
+  Time = Time_End - Time_Begin
+  write(*,*)Time,"s"
 
 
 
