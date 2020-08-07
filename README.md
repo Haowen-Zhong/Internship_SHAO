@@ -1,9 +1,9 @@
 # Internship_SHAO
 
-In this period of time, I have done these things as below:
-
-* Firstly, I read the paper about the EOB formalism which helped me build a kind of an intuition.----------Less than 1 week.
-* Secondly, I tried to code the simplist situation———spherical orbit without considering the effect caused by spins of the BBH.--------2 week
-* Thirdly, I tried to code the harder situation ————spherical orbit with the effect caused by spins of the BBH. --------1 week
-* Forthly, I tried to code the harder situation————elliptical orbit without considering the effect caused by spins of the BBH.--------3 days
-* Fifthly, I tried to code the harder situation————elliptical orbit considering the effect caused by spins of the BBH.--------3 days
+* 第一周:阅读文献，找到计算方法，推导公式
+* 第二周:开始处理圆轨道仅考虑𝑯_𝑵𝑺；考虑初始条件(试错)
+* 第三周:开始处理圆轨道考虑𝑯_𝑺+𝑯_𝑵𝑺(熟悉流程)；利用迭代优化ℒ
+* 第四周:尝试用RK78代替RK4，但是结果不好，“Debug”一周无果
+* 第五周:开始处理椭圆轨道(3天) 仅考虑𝑯_𝑵𝑺；考虑𝑯_𝑺+𝑯_𝑵𝑺(3天)
+* 第六周:代码可以跑出正确的结果，但是运行速度太慢,完成优化
+* 之后:阅读EOB原始论文以及推导Carter constant
